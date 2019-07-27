@@ -4,6 +4,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import javax.sound.sampled.AudioInputStream;
@@ -11,7 +12,10 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import examples.FileHelper;
 
 public class Hangman extends KeyAdapter {
 
@@ -27,9 +31,17 @@ public class Hangman extends KeyAdapter {
 	}
 
 	private void addPuzzles() {
-		puzzles.push("defenestrate");
-		puzzles.push("fancypants");
-		puzzles.push("elements");
+//		puzzles.push("defenestrate");
+//		puzzles.push("fancypants");
+//		puzzles.push("elements");
+		
+		List<String> words =  FileHelper.loadFileContentsIntoArrayList("resource/words.txt");
+
+		for (int i = 0; i < words.size(); i++) {
+
+			puzzles.push(words.get(i));
+
+		}
 	}
 
 	JPanel panel = new JPanel();
@@ -55,16 +67,42 @@ public class Hangman extends KeyAdapter {
 		System.out.println("puzzle is now " + puzzle);
 		createBoxes();
 	}
+	
+	private boolean winingGame() {
+
+		String lebel = "";
+
+		for (JLabel jLabel : boxes) {
+
+			lebel += jLabel.getText();
+
+		}
+
+		return lebel.equals(puzzle);
+
+	}
 
 	public void keyTyped(KeyEvent arg0) {
 		System.out.println(arg0.getKeyChar());
 		updateBoxesWithUserInput(arg0.getKeyChar());
-		if (lives == 0) {
-			playDeathKnell();
-			loadNextPuzzle();
+		
+		if(winingGame()) {
+			int nextGame = JOptionPane.showConfirmDialog(panel, "Congratulations, you won, do you want another game?", puzzle,
+
+					JOptionPane.DEFAULT_OPTION);
+			if (nextGame==0) {
+				loadNextPuzzle();
+			}
+		}
+		if (lives == 0 && !winingGame()) {
+			JOptionPane.showMessageDialog(panel, "You lost, more luck next time!");
+
+			System.exit(0);S
 		}
 	}
-
+	
+	
+	
 	private void updateBoxesWithUserInput(char keyChar) {
 		boolean gotOne = false;
 		for (int i = 0; i < puzzle.length(); i++) {
