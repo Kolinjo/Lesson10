@@ -97,7 +97,7 @@ public class Hangman extends KeyAdapter {
 		if (lives == 0 && !winingGame()) {
 			JOptionPane.showMessageDialog(panel, "You lost, more luck next time!");
 
-			System.exit(0);S
+			System.exit(0);
 		}
 	}
 	
